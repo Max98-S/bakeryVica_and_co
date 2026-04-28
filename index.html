@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BakeryVica & Co</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6f0;
+    --blush: #f0d9ce;
+    --dusty: #c9a89a;
+    --wine: #7a3f3f;
+    --dark: #2a1f1f;
+    --gold: #c9a84c;
+    --white: #ffffff;
+    --text-muted: #8a6e6e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    overflow-x: hidden;
+  }
+
+  /* ── LOGO / MARK ── */
+  .logo-svg { display: block; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(250,246,240,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(201,168,154,0.3);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+
+  .nav-logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--wine);
+    letter-spacing: 0.04em;
+  }
+
+  /* Burger */
+  .burger {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 6px;
+    background: none;
+    border: none;
+    z-index: 200;
+  }
+  .burger span {
+    display: block;
+    width: 26px;
+    height: 1.5px;
+    background: var(--wine);
+    transition: all 0.35s cubic-bezier(.77,0,.175,1);
+    transform-origin: center;
+  }
+  .burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* Drawer menu */
+  .menu-drawer {
+    position: fixed;
+    top: 0; right: -100%;
+    width: min(360px, 100vw);
+    height: 100vh;
+    background: var(--dark);
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem;
+    transition: right 0.45s cubic-bezier(.77,0,.175,1);
+  }
+  .menu-drawer.open { right: 0; }
+
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(42,31,31,0.5);
+    z-index: 140;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .menu-overlay.open { opacity: 1; pointer-events: all; }
+
+  .menu-drawer a {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 300;
+    color: var(--cream);
+    text-decoration: none;
+    display: block;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(201,168,154,0.15);
+    letter-spacing: 0.02em;
+    transition: color 0.2s, padding-left 0.2s;
+  }
+  .menu-drawer a:hover { color: var(--gold); padding-left: 0.5rem; }
+  .menu-drawer a:last-child { border: none; }
+
+  .menu-social {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .menu-social a {
+    font-size: 0.8rem;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dusty) !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .menu-social a:hover { color: var(--gold) !important; padding-left: 0 !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 80%, rgba(240,217,206,0.6) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 80% 20%, rgba(201,168,154,0.35) 0%, transparent 70%),
+      var(--cream);
+  }
+
+  .hero-tag {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dusty);
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--dark);
+    position: relative;
+    letter-spacing: -0.01em;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--wine);
+  }
+
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    max-width: 420px;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .hero-cta {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--wine);
+    color: var(--cream);
+  }
+  .btn-primary:hover { background: var(--dark); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--wine);
+    border: 1px solid var(--dusty);
+  }
+  .btn-outline:hover { background: var(--blush); }
+
+  /* ── SEZIONE TITOLI ── */
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .section-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dusty);
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 300;
+    color: var(--dark);
+    line-height: 1.1;
+  }
+  .section-title em { font-style: italic; color: var(--wine); }
+
+  /* ── GALLERY TORTE ── */
+  #vetrina {
+    padding: 6rem 2rem;
+    background: var(--white);
+  }
+
+  .gallery-scroll {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding: 0.5rem 1rem 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--dusty) transparent;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gallery-scroll::-webkit-scrollbar { height: 4px; }
+  .gallery-scroll::-webkit-scrollbar-thumb { background: var(--dusty); border-radius: 2px; }
+
+  .cake-card {
+    flex: 0 0 320px;
+    height: 420px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    scroll-snap-align: start;
+    cursor: pointer;
+  }
+
+  .cake-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(.25,.46,.45,.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+  }
+
+  /* placeholder colorati per le torte */
+  .cake-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    transition: transform 0.6s cubic-bezier(.25,.46,.45,.94);
+  }
+
+  .cake-card:hover .cake-placeholder { transform: scale(1.06); }
+
+  .cake-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(42,31,31,0.88) 0%, rgba(42,31,31,0.2) 50%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+
+  .cake-card:hover .cake-overlay { opacity: 1; }
+
+  .cake-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.2;
+  }
+
+  .cake-price {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    margin-top: 0.25rem;
+  }
+
+  .cake-desc {
+    font-size: 0.78rem;
+    color: rgba(250,246,240,0.75);
+    margin-top: 0.4rem;
+    line-height: 1.5;
+  }
+
+  /* badge categoria */
+  .cake-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(250,246,240,0.92);
+    color: var(--wine);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border-radius: 1px;
+  }
+
+  /* ── COMMISSIONI ── */
+  #commissioni {
+    padding: 6rem 2rem;
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .commissioni-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 30% 50%, rgba(122,63,63,0.25) 0%, transparent 70%);
+  }
+
+  .commissioni-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    position: relative;
+  }
+
+  .commissioni-text .section-tag { color: var(--dusty); }
+  .commissioni-text .section-title { color: var(--cream); }
+  .commissioni-text .section-title em { color: var(--gold); }
+
+  .commissioni-body {
+    color: rgba(250,246,240,0.65);
+    font-size: 0.9rem;
+    line-height: 1.8;
+    margin-top: 1.2rem;
+  }
+
+  .commissioni-steps {
+    margin-top: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--wine);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 2rem;
+  }
+
+  .step-text strong {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.2rem;
+  }
+
+  .step-text span {
+    font-size: 0.8rem;
+    color: rgba(250,246,240,0.55);
+  }
+
+  .commissioni-form-box {
+    background: rgba(250,246,240,0.05);
+    border: 1px solid rgba(201,168,154,0.2);
+    border-radius: 2px;
+    padding: 2rem;
+  }
+
+  .form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dusty);
+    margin-bottom: 0.4rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: rgba(250,246,240,0.06);
+    border: 1px solid rgba(201,168,154,0.2);
+    border-radius: 1px;
+    padding: 0.65rem 0.9rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.85rem;
+    color: var(--cream);
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: rgba(250,246,240,0.3); }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--dusty);
+  }
+
+  .form-group select option { background: var(--dark); color: var(--cream); }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--wine);
+    color: var(--cream);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 0.5rem;
+  }
+  .btn-submit:hover { background: #5a2e2e; }
+
+  /* ── CHI SIAMO ── */
+  #about {
+    padding: 6rem 2rem;
+    background: var(--blush);
+  }
+
+  .about-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .about-inner p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--wine);
+    font-weight: 300;
+    margin-top: 1.5rem;
+  }
+
+  .about-instagram {
+    margin-top: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--wine);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--dusty);
+    padding-bottom: 2px;
+    transition: color 0.2s;
+  }
+  .about-instagram:hover { color: var(--dark); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--dark);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    border-top: 1px solid rgba(201,168,154,0.15);
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--cream);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-sub {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ── SCROLL HINT ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0.5;
+    animation: bob 2s infinite;
+  }
+
+  .scroll-hint span {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .scroll-arrow {
+    width: 1px;
+    height: 30px;
+    background: linear-gradient(to bottom, var(--dusty), transparent);
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ── FILTER TABS ── */
+  .filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .filter-tab {
+    padding: 0.4rem 1.1rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--dusty);
+    background: transparent;
+    color: var(--text-muted);
+    transition: all 0.25s;
+    border-radius: 1px;
+    font-family: 'Jost', sans-serif;
+  }
+
+  .filter-tab.active,
+  .filter-tab:hover {
+    background: var(--wine);
+    color: var(--cream);
+    border-color: var(--wine);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+
+    .commissioni-inner {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .cake-card { flex: 0 0 280px; height: 370px; }
+
+    .hero { padding: 7rem 1.5rem 3rem; }
+  }
+
+  /* Notifica invio form */
+  .form-success {
+    display: none;
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--gold);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+  }
+</style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div class="menu-overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- DRAWER MENU -->
+<nav role="navigation" aria-label="Menu principale">
+  <a href="#" class="nav-logo">
+    <!-- Logo inline -->
+    <svg class="logo-svg" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="18" cy="18" r="17" stroke="#7a3f3f" stroke-width="1"/>
+      <!-- piatto torta -->
+      <ellipse cx="18" cy="25" rx="10" ry="2.2" fill="#c9a89a" opacity="0.5"/>
+      <!-- corpo torta -->
+      <rect x="10" y="17" width="16" height="8" rx="1" fill="#c9a89a"/>
+      <!-- strato crema -->
+      <rect x="10" y="15" width="16" height="3" rx="1" fill="#f0d9ce"/>
+      <!-- piano superiore -->
+      <rect x="12" y="10" width="12" height="6" rx="1" fill="#c9a89a"/>
+      <!-- decorazione top -->
+      <path d="M18 4 Q19.5 7 18 10 Q16.5 7 18 4Z" fill="#7a3f3f"/>
+      <!-- candeline -->
+      <line x1="14" y1="10" x2="14" y2="8" stroke="#7a3f3f" stroke-width="1"/>
+      <circle cx="14" cy="7.5" r="1" fill="#c9a84c"/>
+      <line x1="22" y1="10" x2="22" y2="8" stroke="#7a3f3f" stroke-width="1"/>
+      <circle cx="22" cy="7.5" r="1" fill="#c9a84c"/>
+    </svg>
+    <span class="nav-logo-text">BakeryVica & Co</span>
+  </a>
+
+  <button class="burger" id="burger" aria-label="Apri menu" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<div class="menu-drawer" id="drawer">
+  <a href="#" onclick="closeMenu()">Home</a>
+  <a href="#vetrina" onclick="closeMenu()">Le Torte</a>
+  <a href="#commissioni" onclick="closeMenu()">Su Commissione</a>
+  <a href="#about" onclick="closeMenu()">Chi Siamo</a>
+  <div class="menu-social">
+    <a href="https://instagram.com/bakeryvica_and_co" target="_blank">@ Instagram</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+
+  <p class="hero-tag">La tua torta-wow · Per ogni occasione</p>
+
+  <h1>
+    Bellissime.<br>
+    <em>Per sempre.</em>
+  </h1>
+
+  <p class="hero-sub">
+    Torte scenografiche in finta per compleanni, lauree, anniversari e feste. Perfette per le foto, impeccabili per sempre.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#vetrina" class="btn btn-primary">Scopri le torte</a>
+    <a href="#commissioni" class="btn btn-outline">Richiedi la tua</a>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scorri</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- VETRINA TORTE -->
+<section id="vetrina">
+  <div class="section-header">
+    <p class="section-tag">La nostra collezione</p>
+    <h2 class="section-title">Le <em>Torte</em> in Vetrina</h2>
+  </div>
+
+  <!-- Filtri categoria -->
+  <div class="filter-tabs" id="filterTabs">
+    <button class="filter-tab active" onclick="filterCakes('all', this)">Tutte</button>
+    <button class="filter-tab" onclick="filterCakes('compleanno', this)">Compleanno</button>
+    <button class="filter-tab" onclick="filterCakes('laurea', this)">Laurea</button>
+    <button class="filter-tab" onclick="filterCakes('anniversario', this)">Anniversario</button>
+    <button class="filter-tab" onclick="filterCakes('feste', this)">Feste</button>
+  </div>
+
+  <div class="gallery-scroll" id="gallery">
+
+    <div class="cake-card" data-cat="compleanno">
+      <div class="cake-badge">Compleanno</div>
+      <div class="cake-placeholder" style="background: linear-gradient(135deg, #f9e8e0 0%, #ecd3c5 100%);">🎂</div>
+      <div class="cake-overlay">
+        <div class="cake-name">Velvet Dreams</div>
+        <div class="cake-price">a partire da € 65</div>
+        <div class="cake-desc">Torta a 3 piani in velluto rosa antico con fiori secchi e macarons decorativi.</div>
+      </div>
+    </div>
+
+    <div class="cake-card" data-cat="laurea">
+      <div class="cake-badge">Laurea</div>
+      <div class="cake-placeholder" style="background: linear-gradient(135deg, #e8e0d0 0%, #d4c9b0 100%);">🎓</div>
+      <div class="cake-overlay">
+        <div class="cake-name">Gold Graduation</div>
+        <div class="cake-price">a partire da € 75</div>
+        <div class="cake-desc">Elegante torta bianca con dettagli dorati, tocco di laurea e dedicatoria personalizzata.</div>
+      </div>
+    </div>
+
+    <div class="cake-card" data-cat="anniversario">
+      <div class="cake-badge">Anniversario</div>
+      <div class="cake-placeholder" style="background: linear-gradient(135deg, #f0dce8 0%, #e0c4d4 100%);">💍</div>
+      <div class="cake-overlay">
+        <div class="cake-name">Amore Eterno</div>
+        <div class="cake-price">a partire da € 85</div>
+        <div class="cake-desc">Torta nuziale a 4 piani con rose in ceramica e fiocchi di seta color cipria.</div>
+      </div>
+    </div>
+
+    <div class="cake-card" data-cat="feste">
+      <div class="cake-badge">Feste</div>
+      <div class="cake-placeholder" style="background: linear-gradient(135deg, #e0eed8 0%, #c8dfc0 100%);">🌿</div>
+      <div class="cake-overlay">
+        <div class="cake-name">Botanical Garden</div>
+        <div class="cake-price">a partire da € 70</div>
+        <div class="cake-desc">Torta verde salvia con foglie tropicali e bacche decorative. Vibe boho chic.</div>
+      </div>
+    </div>
+
+    <div class="cake-card" data-cat="compleanno">
+      <div class="cake-badge">Compleanno</div>
+      <div class="cake-placeholder" style="background: linear-gradient(135deg, #e8e0f5 0%, #d4c8ea 100%);">✨</div>
+      <div class="cake-overlay">
+        <div class="cake-name">Midnight Glam</div>
+        <div class="cake-price">a partire da € 80</div>
+        <div class="cake-desc">Torta nero lucido con stelle in glitter argento e numero personalizzato in oro.</div>
+      </div>
+    </div>
+
+    <div class="cake-card" data-cat="laurea">
+      <div class="cake-badge">Laurea</div>
+      <div class="cake-placeholder" style="background: linear-gradient(135deg, #fcecd8 0%, #f5d8b8 100%);">📚</div>
+      <div class="cake-overlay">
+        <div class="cake-name">La Dottoressa</div>
+        <div class="cake-price">a partire da € 72</div>
+        <div class="cake-desc">Torta moderna a strisce con libri in ceramica e tocco di laurea miniaturizzato.</div>
+      </div>
+    </div>
+
+    <div class="cake-card" data-cat="anniversario">
+      <div class="cake-badge">Anniversario</div>
+      <div class="cake-placeholder" style="background: linear-gradient(135deg, #fce8e0 0%, #f0d0c0 100%);">🌹</div>
+      <div class="cake-overlay">
+        <div class="cake-name">Rose Eternelle</div>
+        <div class="cake-price">a partire da € 90</div>
+        <div class="cake-desc">Torta naked cake con rose preserved in cera, personalizzabile con gli anni insieme.</div>
+      </div>
+    </div>
+
+    <div class="cake-card" data-cat="feste">
+      <div class="cake-badge">Feste</div>
+      <div class="cake-placeholder" style="background: linear-gradient(135deg, #d8eef5 0%, #c0dcea 100%);">🎉</div>
+      <div class="cake-overlay">
+        <div class="cake-name">Baby Shower Cloud</div>
+        <div class="cake-price">a partire da € 68</div>
+        <div class="cake-desc">Torta pastello con nuvolette in gesso e piume bianche. Perfetta per l'annuncio.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMMISSIONI -->
+<section id="commissioni">
+  <div class="commissioni-bg"></div>
+  <div class="commissioni-inner">
+
+    <div class="commissioni-text">
+      <div class="section-header" style="text-align:left; margin-bottom:0;">
+        <p class="section-tag">Personalizzazione totale</p>
+        <h2 class="section-title">La tua torta,<br><em>su misura</em></h2>
+      </div>
+      <p class="commissioni-body">
+        Ogni evento è unico. Realizziamo torte fake completamente personalizzate: colori, texture, decorazioni e dimensioni su richiesta. Dalla piccola smash cake al maxi centrotavola a 6 piani.
+      </p>
+      <div class="commissioni-steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-text">
+            <strong>Raccontaci il tuo sogno</strong>
+            <span>Inviaci l'ispirazione: foto, colori, tema dell'evento.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-text">
+            <strong>Preventivo gratuito</strong>
+            <span>Ti risponderemo entro 24h con quotazione e tempistiche.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-text">
+            <strong>Consegna & Foto perfette</strong>
+            <span>La torta arriva pronta per il tuo set fotografico.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="commissioni-form-box">
+      <p class="form-title">Richiedi il tuo progetto</p>
+      <form id="commForm" onsubmit="submitForm(event)">
+        <div class="form-group">
+          <label>Il tuo nome</label>
+          <input type="text" placeholder="es. Valentina" required>
+        </div>
+        <div class="form-group">
+          <label>Instagram / Contatto</label>
+          <input type="text" placeholder="@tuoprofilo o numero">
+        </div>
+        <div class="form-group">
+          <label>Tipo di evento</label>
+          <select>
+            <option value="">Seleziona...</option>
+            <option>Compleanno</option>
+            <option>Laurea</option>
+            <option>Anniversario / Matrimonio</option>
+            <option>Baby Shower</option>
+            <option>Festa a tema</option>
+            <option>Altro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Descrivi la torta dei tuoi sogni</label>
+          <textarea placeholder="Colori, numero di piani, decorazioni, ispirazione..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Invia la richiesta →</button>
+      </form>
+      <div class="form-success" id="formSuccess">
+        ✦ Grazie! Ti risponderemo entro 24h.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CHI SIAMO -->
+<section id="about">
+  <div class="about-inner">
+    <div class="section-header">
+      <p class="section-tag">Il nostro mondo</p>
+      <h2 class="section-title">Chi <em>siamo</em></h2>
+    </div>
+    <p>
+      Siamo BakeryVica & Co, un laboratorio artigianale specializzato in torte scenografiche di design. Le nostre creazioni non si mangiano — ma durano per sempre, pronte per ogni sessione fotografica, ogni momento da ricordare.
+    </p>
+    <p>
+      Ogni torta è realizzata a mano con materiali di qualità, pensata nei minimi dettagli per essere esattamente come la immagini. Perché il tuo giorno speciale merita la perfezione, anche in foto.
+    </p>
+    <a href="https://instagram.com/bakeryvica_and_co" target="_blank" class="about-instagram">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+      </svg>
+      @bakeryvica_and_co
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">BakeryVica & Co</div>
+  <div class="footer-sub">Torta-WOW · Handmade in Italy</div>
+</footer>
+
+<script>
+  // ── MENU ──
+  function toggleMenu() {
+    const drawer = document.getElementById('drawer');
+    const burger = document.getElementById('burger');
+    const overlay = document.getElementById('overlay');
+    drawer.classList.toggle('open');
+    burger.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  function closeMenu() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('burger').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+
+  // ── FILTER ──
+  function filterCakes(cat, btn) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.cake-card').forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.style.display = 'block';
+        card.style.opacity = '1';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // ── FORM ──
+  function submitForm(e) {
+    e.preventDefault();
+    document.getElementById('commForm').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  }
+
+  // ── HOVER su card ── (touch support)
+  document.querySelectorAll('.cake-card').forEach(card => {
+    card.addEventListener('touchstart', () => {
+      card.querySelector('.cake-overlay').style.opacity = '1';
+    }, { passive: true });
+    card.addEventListener('touchend', () => {
+      setTimeout(() => {
+        card.querySelector('.cake-overlay').style.opacity = '0';
+      }, 1800);
+    });
+  });
+</script>
+</body>
+</html>
